@@ -1,0 +1,17 @@
+build/
+release/
+documentation/html
+documentation/latex
+VultrHelper
+VultrHelper.exe
+*.generated.h
+*.generated.cpp
+CMakeFiles/
+.cache/
+.idea/
+cmake-build-debug/
+.vs/
+out/
+.vimspector.json
+vendor/VultrCore
+vendor/VultrCore/*
