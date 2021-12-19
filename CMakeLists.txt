@@ -9,7 +9,6 @@ enable_testing()
 
 file(
   GLOB_RECURSE Sources
-  # "vendor/*.cpp"
   "src/sources.cpp"
 )
 
@@ -24,23 +23,22 @@ if(WIN32)
   add_compile_options("/Zc:preprocessor")
 
   set(CMAKE_CXX_STANDARD 20)
-  add_subdirectory(vendor/VultrCore)
 endif(WIN32)
 
 
+add_subdirectory(vendor/VultrCore)
 add_library(${This} SHARED ${Sources})
 
 set(TargetIncludeDirs src vendor)
 
-if(WIN32)
-  set(Libs Vultr)
-endif(WIN32)
+set(Libs Vultr)
 
+set_target_properties(Vultr PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${This} PUBLIC ${Libs})
 target_include_directories(${This} PUBLIC ${TargetIncludeDirs})
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS "-Wno-reorder -Wno-volatile -Wno-deprecated-enum-enum-conversion")
+  set(CMAKE_CXX_FLAGS "-Wno-reorder -Wno-volatile -Wno-deprecated-enum-enum-conversion")
 endif(UNIX)
