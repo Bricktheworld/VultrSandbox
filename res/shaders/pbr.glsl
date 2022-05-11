@@ -29,11 +29,10 @@ layout (set = 0, binding = 0) uniform Camera {
 layout (set = 0, binding = 1) uniform DirectionalLight {
     vec4 direction;
 
-    vec4 ambient;
     vec4 diffuse;
     float specular;
     float intensity;
-    int exists;
+    float ambient;
 } u_Directional_light;
 
 layout (set = 1, binding = 0) uniform Material {
@@ -100,11 +99,10 @@ const float PI = 3.14159265359;
 layout (set = 0, binding = 1) uniform DirectionalLight {
     vec4 direction;
 
-    vec4 ambient;
     vec4 diffuse;
     float specular;
     float intensity;
-    int exists;
+    float ambient;
 } u_Directional_light;
 
 layout (set = 1, binding = 0) uniform Material {
@@ -174,7 +172,7 @@ void main()
     //        output_luminance += calc_point_light(light, view_direction, normal, roughness, metallic, F0, albedo.rgb);//(kD * albedo.rgb / PI + specular) * radiance * cos_theta;
     //    }
 
-    vec3 ambient = vec3(0.03) * albedo.rgb;
+    vec3 ambient = vec3(u_Directional_light.ambient) * albedo.rgb;
     vec3 result  = ambient + output_luminance;
 
     color        = vec4(result, albedo.a);
