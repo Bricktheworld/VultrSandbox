@@ -1,4 +1,4 @@
-[BEGIN_UNIFORMS]
+#[UNIFORMS]
 
 layout (set = 1, binding = 0) uniform Material {
     vec4 albedo;
@@ -13,9 +13,7 @@ layout (set = 1, binding = 3) uniform sampler2D u_Metallic_map;
 layout (set = 1, binding = 4) uniform sampler2D u_Roughness_map;
 layout (set = 1, binding = 5) uniform sampler2D u_Ambient_occlusion_map;
 
-[END_UNIFORMS]
-
-#pragma vertex
+#[VERTEX]
 
 void main()
 {
@@ -23,7 +21,7 @@ void main()
     vertex_main_default(mvp);
 }
 
-#pragma fragment
+#[FRAGMENT]
 
 layout (location = 0) out vec4 color;
 
