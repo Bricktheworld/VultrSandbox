@@ -1,39 +1,4 @@
-#pragma vertex
-#version 450
-
-layout (location = 0) in vec3 v_Position;
-layout (location = 1) in vec3 v_Normal;
-layout (location = 2) in vec2 v_UV;
-layout (location = 3) in vec3 v_Tangent;
-layout (location = 4) in vec3 v_Bitangent;
-
-layout (location = 0) out vec3 f_Position;
-layout (location = 1) out vec3 f_Normal;
-layout (location = 2) out vec2 f_UV;
-layout (location = 3) out mat3 f_TBN;
-layout (location = 6) out mat3 f_Normal_matrix;
-
-layout(push_constant) uniform Constants
-{
-    vec4 color;
-    mat4 mat;
-} u_Model;
-
-layout (set = 0, binding = 0) uniform Camera {
-    vec4 position;
-    mat4 view;
-    mat4 proj;
-    mat4 view_proj;
-} u_Camera;
-
-layout (set = 0, binding = 1) uniform DirectionalLight {
-    vec4 direction;
-
-    vec4 diffuse;
-    float specular;
-    float intensity;
-    float ambient;
-} u_Directional_light;
+[BEGIN_UNIFORMS]
 
 layout (set = 1, binding = 0) uniform Material {
     vec4 albedo;
@@ -47,76 +12,20 @@ layout (set = 1, binding = 2) uniform sampler2D u_Normal_map;
 layout (set = 1, binding = 3) uniform sampler2D u_Metallic_map;
 layout (set = 1, binding = 4) uniform sampler2D u_Roughness_map;
 layout (set = 1, binding = 5) uniform sampler2D u_Ambient_occlusion_map;
+
+[END_UNIFORMS]
+
+#pragma vertex
 
 void main()
 {
     mat4 mvp    = u_Camera.view_proj * u_Model.mat;
-    gl_Position = mvp * vec4(v_Position, 1.0f);
-    f_Position  = vec3(u_Model.mat * vec4(v_Position, 1.0f));
-    f_Normal    = v_Normal;
-    f_UV        = v_UV;
-    f_Normal_matrix = mat3(transpose(inverse(u_Model.mat)));
-
-
-    // TBN matrix calculation
-    vec3 T = normalize(f_Normal_matrix * v_Tangent);
-    vec3 N = normalize(f_Normal_matrix * v_Normal);
-
-    // Re-orthogonalize T with respect to N
-    T = normalize(T - dot(T, N) * N);
-
-    vec3 B = cross(N, T);
-
-    f_TBN = mat3(T, B, N);
+    vertex_main_default(mvp);
 }
 
-    #pragma fragment
-    #version 450
+#pragma fragment
 
 layout (location = 0) out vec4 color;
-
-layout (location = 0) in vec3 f_Position;
-layout (location = 1) in vec3 f_Normal;
-layout (location = 2) in vec2 f_UV;
-layout (location = 3) in mat3 f_TBN;
-layout (location = 6) in mat3 f_Normal_mat;
-
-layout(push_constant) uniform Constants
-{
-    vec4 color;
-    mat4 mat;
-} u_Model;
-
-layout (set = 0, binding = 0) uniform Camera {
-    vec4 position;
-    mat4 view;
-    mat4 proj;
-    mat4 view_proj;
-} u_Camera;
-
-const float PI = 3.14159265359;
-
-layout (set = 0, binding = 1) uniform DirectionalLight {
-    vec4 direction;
-
-    vec4 diffuse;
-    float specular;
-    float intensity;
-    float ambient;
-} u_Directional_light;
-
-layout (set = 1, binding = 0) uniform Material {
-    vec4 albedo;
-    float metallic;
-    float ambient_occlusion;
-    float roughness;
-} u_Material;
-
-layout (set = 1, binding = 1) uniform sampler2D u_Albedo;
-layout (set = 1, binding = 2) uniform sampler2D u_Normal_map;
-layout (set = 1, binding = 3) uniform sampler2D u_Metallic_map;
-layout (set = 1, binding = 4) uniform sampler2D u_Roughness_map;
-layout (set = 1, binding = 5) uniform sampler2D u_Ambient_occlusion_map;
 
 //vec3 calc_point_light(PointLight light, vec3 normal, vec3 view_direction, vec3 material_diffuse, vec3 material_specular);
 vec3 calc_directional_light(vec3 view_direction, vec3 normal, float roughness, float metallic, vec3 F0, vec3 albedo);
@@ -125,6 +34,8 @@ float distribution_ggx(vec3 normal, vec3 halfway_vector, float roughness);
 float geometry_schlick_ggx(float NdotV, float roughness);
 float geometry_smith(vec3 normal, vec3 view_direction, vec3 light_direction, float roughness);
 vec3 fresnel_schlick(float cosTheta, vec3 F0);
+
+const float PI = 3.14159265359;
 
 void main()
 {
