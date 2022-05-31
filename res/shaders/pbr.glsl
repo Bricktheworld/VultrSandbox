@@ -15,15 +15,43 @@ layout (set = 1, binding = 5) uniform sampler2D u_Ambient_occlusion_map;
 
 #[VERTEX]
 
+layout (location = 0) out vec3 f_Position;
+layout (location = 1) out vec3 f_Normal;
+layout (location = 2) out vec2 f_UV;
+layout (location = 3) out mat3 f_TBN;
+layout (location = 6) out mat3 f_Normal_matrix;
+
 void main()
 {
     mat4 mvp    = u_Camera.view_proj * u_Model.mat;
-    vertex_main_default(mvp);
+    gl_Position = mvp * vec4(v_Position, 1.0f);
+    f_Position  = vec3(u_Model.mat * vec4(v_Position, 1.0f));
+    f_Normal    = v_Normal;
+    f_UV        = v_UV;
+    f_Normal_matrix = mat3(transpose(inverse(u_Model.mat)));
+
+
+    // TBN matrix calculation
+    vec3 T = normalize(f_Normal_matrix * v_Tangent);
+    vec3 N = normalize(f_Normal_matrix * v_Normal);
+
+    // Re-orthogonalize T with respect to N
+    T = normalize(T - dot(T, N) * N);
+
+    vec3 B = cross(N, T);
+
+    f_TBN = mat3(T, B, N);
 }
 
 #[FRAGMENT]
 
 layout (location = 0) out vec4 color;
+
+layout (location = 0) in vec3 f_Position;
+layout (location = 1) in vec3 f_Normal;
+layout (location = 2) in vec2 f_UV;
+layout (location = 3) in mat3 f_TBN;
+layout (location = 6) in mat3 f_Normal_mat;
 
 //vec3 calc_point_light(PointLight light, vec3 normal, vec3 view_direction, vec3 material_diffuse, vec3 material_specular);
 vec3 calc_directional_light(vec3 view_direction, vec3 normal, float roughness, float metallic, vec3 F0, vec3 albedo);
