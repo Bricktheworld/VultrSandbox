@@ -6,7 +6,7 @@
 using namespace Vultr;
 struct GameplayState
 {
-    Platform::CallbackHandle cursor_lock_handle{};
+    Input::CallbackHandle cursor_lock_handle{};
 };
 
 void use_game_memory(void *m) { g_game_memory = static_cast<GameMemory *>(m); }
@@ -32,7 +32,7 @@ void *vultr_init(void)
 {
     auto *state = v_alloc<GameplayState>();
 
-    state->cursor_lock_handle = Platform::register_key_callback(engine()->window, state, on_key_press);
+    state->cursor_lock_handle = Input::register_key_callback(state, on_key_press);
 
     // Initialize random.
     srand((u32)time(nullptr));
