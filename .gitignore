@@ -15,3 +15,4 @@ out/
 .vimspector.json
 vendor/VultrCore
 vendor/VultrCore/*
+compile_commands.json

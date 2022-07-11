@@ -29,6 +29,7 @@ clean:
 	rm -f $(OBJS) $(DEPS) $(BUILD)/lib$(TARGET).so
 
 $(TARGET): $(OBJS)
+	$(MAKE) -C vendor/VultrCore -j8
 	$(CXX) -o $(BUILD)/lib$@.so $^ -shared $(LDFLAGS)
 
 $(BUILD) $(DEP):
